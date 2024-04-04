@@ -37,12 +37,21 @@ export default class VedaService {
     return await Backend.authenticate(this.options.veda.user, this.options.veda.password);
   }
 
-  async query (queryString, limit, offset) {
-    return await Backend.query({
+  async query (sql, vql, limit, offset) {
+    const queryParams = {
       from: offset,
       top: limit,
       limit: limit,
-      sql: queryString,
-    });
+      sql: sql,
+      query: vql,
+    };
+    if (!sql) {
+      delete queryParams.sql;
+    }
+    if (!vql) {
+      delete queryParams.query;
+    }
+    if (!sql && !vql) return [];
+    return await Backend.query(queryParams);
   }
 }
